@@ -3,10 +3,10 @@ import {render} from 'react-dom'
 import {Redirect, Link} from 'react-router-dom'
 
 import $ from 'jquery'
-// var remote = require('electron').remote;
+var remote = window.require('electron').remote;
 const fs = window.require('fs-extra')
-// var fs = window.require('fs');
 
+import path from 'path'
 
 class LandingPageDropZone extends Component {
   constructor (props) {
@@ -16,14 +16,22 @@ class LandingPageDropZone extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('drop', function (e) {
+    document.addEventListener('drop', (e) => {
         e.preventDefault();
         e.stopPropagation();
         
         for (let f of e.dataTransfer.files) {
-            console.log('File(s) you dragged here: ', f.path)
-            localStorage.setItem('currSyncFilePath', f.path)
-						fs.copy(f.path, '/Users/austenma/Flam-Studio/Synced-Files/Testing.logicx')
+            console.log('File(s) you dragged here: ', f.path, f, this.props)
+
+            // Gets the path to the electron App dir
+            let appPath = remote.app.getAppPath()
+
+            // Persists current file synced to LS
+            localStorage.setItem('currSyncFilePath', appPath + '/Synced-Files/' + f.name)
+
+            fs.copy(f.path, appPath + '/Synced-Files/' + f.name)
+            
+            this.props.watchFileDropped(appPath + '/Synced-Files/' + f.name)
         }
     });
 

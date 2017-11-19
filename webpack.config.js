@@ -29,6 +29,9 @@ var config = {
       } 
     ]
   },
+  node: {
+    fs: 'empty'
+  },
   devServer: {
     historyApiFallback: true,
   }

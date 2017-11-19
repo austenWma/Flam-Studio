@@ -1,0 +1,12 @@
+.landingPageNavbarContainer {
+    height: 100px;
+    width: 100%;
+    border-style: solid;
+    border-color: red;
+}
+.landingPageDropZoneContainer {
+    height: 100px;
+    width: 100%;
+    border-style: solid;
+    border-color: red;
+}
