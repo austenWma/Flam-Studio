@@ -8,6 +8,11 @@ import LandingPageDropZone from './LandingPageDropZone.jsx'
 import $ from 'jquery'
 
 const fs = window.require('fs-extra')
+var archiver = window.require('archiver')
+var remote = window.require('electron').remote;
+var zipFolder = window.require('zip-folder');
+
+import path from 'path'
 
 class LandingPage extends Component {
   constructor (props) {
@@ -15,6 +20,7 @@ class LandingPage extends Component {
     this.state = {
     };
     this.watchFileDropped = this.watchFileDropped.bind(this)
+    this.compressSyncedFile = this.compressSyncedFile.bind(this)
   }
 
   componentDidMount() {
@@ -33,14 +39,33 @@ class LandingPage extends Component {
     })
   }
 
+  compressSyncedFile() {
+    console.log('Compressing file')
+
+    let appPath = remote.app.getAppPath()  
+
+    zipFolder(appPath + '/Synced-Files/Testing.logicx', appPath + '/Synced-Files/Testing.logicx.zip', function(err) {
+      if(err) {
+          console.log('oh no!', err);
+      } else {
+          console.log('EXCELLENT');
+      }
+    });  
+  }
+
   render() {
     return (
       <div>
         <div className="landingPageNavbarContainer">
-            <LandingPageNavbar />
+          <LandingPageNavbar />
         </div>
         <div className="landingPageDropZoneContainer">
-            <LandingPageDropZone watchFileDropped={this.watchFileDropped}/>
+          <LandingPageDropZone watchFileDropped={this.watchFileDropped}/>
+        </div>
+        <div>
+          <button onClick={this.compressSyncedFile}>
+            Compress Synced File
+          </button>
         </div>
       </div>
     )
