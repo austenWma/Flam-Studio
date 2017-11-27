@@ -35,8 +35,6 @@ class LandingPageDropZone extends Component {
         }
     });
 
-    console.log('LOCAL STORAGE', localStorage)
-
     document.addEventListener('dragover', function (e) {
         e.preventDefault();
         e.stopPropagation();
