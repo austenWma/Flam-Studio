@@ -3,8 +3,10 @@ import {render} from 'react-dom'
 import {Redirect, Link} from 'react-router-dom'
 
 import $ from 'jquery'
-var remote = window.require('electron').remote;
+
+var remote = window.require('electron').remote
 const fs = window.require('fs-extra')
+const {shell} = window.require('electron')
 
 import path from 'path'
 
@@ -30,6 +32,8 @@ class LandingPageDropZone extends Component {
             localStorage.setItem('currSyncFilePath', appPath + '/Synced-Files/' + f.name)
 
             fs.copy(f.path, appPath + '/Synced-Files/' + f.name)
+
+            shell.openItem(f.path, appPath + '/Synced-Files/' + f.name);
             
             this.props.watchFileDropped(appPath + '/Synced-Files/' + f.name)
         }

@@ -25,6 +25,7 @@ class LandingPage extends Component {
     this.watchFileDropped = this.watchFileDropped.bind(this)
     this.compressSyncedFile = this.compressSyncedFile.bind(this)
     this.uploadFile = this.uploadFile.bind(this)
+    this.goToProjectsPage = this.goToProjectsPage.bind(this)
   }
 
   componentDidMount() {
@@ -66,8 +67,6 @@ class LandingPage extends Component {
     var uploadTask = storageRef.put(file);
 
     uploadTask.on('state_changed', function(snapshot){
-      // Observe state change events such as progress, pause, and resume
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       console.log('Upload is ' + progress + '% done');
       switch (snapshot.state) {
@@ -79,12 +78,14 @@ class LandingPage extends Component {
           break;
       }
     }, function(error) {
-      // Handle unsuccessful uploads
+      console.log(error)
     }, function() {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
       var downloadURL = uploadTask.snapshot.downloadURL;
     });
+  }
+
+  goToProjectsPage() {
+    this.props.history.push('/ProjectsPage')
   }
 
   render() {
@@ -101,6 +102,9 @@ class LandingPage extends Component {
             Compress Synced File
           </button>
           <input type="file" className="fileUploadInput" onChange={this.uploadFile}></input>
+          <button onClick={this.goToProjectsPage}>
+            My Projects
+          </button>
         </div>
       </div>
     )
