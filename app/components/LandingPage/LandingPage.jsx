@@ -8,7 +8,6 @@ import LandingPageDropZone from './LandingPageDropZone.jsx'
 import $ from 'jquery'
 
 const fs = window.require('fs-extra')
-var archiver = window.require('archiver')
 var remote = window.require('electron').remote;
 var zipFolder = window.require('zip-folder');
 
@@ -62,7 +61,6 @@ class LandingPage extends Component {
     console.log(localStorage.getItem('access_token'))
 
     let file = e.target.files[0];
-
     var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
     var uploadTask = storageRef.put(file);
 
