@@ -56,15 +56,16 @@ class ProjectsListItem extends Component {
 					if (err) {
 							throw err;
 					}
-					uploadCallback(data)
+					uploadCallback(data, projectName)
 				})
       }
     });
 	}
 
-	uploadFile(file) {
+	uploadFile(file, projectName) {
 		console.log(localStorage.getItem('access_token'))
 
+		// Prompting for Commit messages
 		prompt({
 			title: 'Flam-Studio',
 			label: 'Commit Message',
@@ -75,10 +76,24 @@ class ProjectsListItem extends Component {
 			type: 'input', 
 		})
 		.then((r) => {
-				console.log('result', r); 
-				if (localStorage.getItem('access_token')) {
-					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
-					var uploadTask = storageRef.put(file);
+				console.log('Prompt result', r); 
+
+				if (r === null) {
+					console.log('Canceled.')
+				}	else if (r !== 'Your commit message here') {
+
+					let commitTime = Date()
+
+					let projectMetaData = {
+						customMetadata: {
+							commitMessage: r,
+							commitTime: commitTime
+						}
+					}
+
+					// Firebase file upload
+					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/' + projectName);
+					var uploadTask = storageRef.put(file, projectMetaData);
 		
 					uploadTask.on('state_changed', function(snapshot){
 						var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -97,8 +112,8 @@ class ProjectsListItem extends Component {
 					}, function() {
 						var downloadURL = uploadTask.snapshot.downloadURL;
 					});
-				}	else {
-					console.log('NO ACCESS')
+				}	else if (r === 'Your commit message here') {
+					alert('Make a new commit message!')
 				}
 		})
 		.catch(console.error);
