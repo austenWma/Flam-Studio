@@ -27,7 +27,7 @@ class ProjectsList extends Component {
     let appPath = remote.app.getAppPath()
     fs.readdir(appPath + '/Synced-Files/', (err, files) => {
 			let filteredFiles = files.filter((file) => {
-				return file !== '.DS_Store'
+				return file !== '.DS_Store' && !file.includes('.zip')
 			})
 			this.setState({
 					files: filteredFiles

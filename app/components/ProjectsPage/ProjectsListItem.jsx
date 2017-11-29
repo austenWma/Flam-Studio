@@ -5,9 +5,11 @@ import {Redirect, Link} from 'react-router-dom'
 import $ from 'jquery'
 
 const fs = window.require('fs-extra')
-var remote = window.require('electron').remote;
-var zipFolder = window.require('zip-folder');
+const electron = window.require('electron')
+var remote = window.require('electron').remote
+var zipFolder = window.require('zip-folder')
 const {shell} = window.require('electron')
+const {dialog} = window.require('electron').remote
 
 import { firebaseRef } from '../../Firebase/firebase.js'
 import * as firebase from 'firebase'
@@ -20,6 +22,8 @@ class ProjectsListItem extends Component {
 		this.watchFileOpened = this.watchFileOpened.bind(this)
 		this.compressSyncedFile = this.compressSyncedFile.bind(this)
 		this.openFile = this.openFile.bind(this)
+		this.commitFile = this.commitFile.bind(this)
+		this.uploadFile = this.uploadFile.bind(this)
 	}
 	
 	openFile() {
@@ -32,19 +36,52 @@ class ProjectsListItem extends Component {
 		this.watchFileOpened(appPath + '/Synced-Files/' + this.props.projectName, this.props.projectName)
 	}
 
-  compressSyncedFile() {
+	commitFile() {
+		this.compressSyncedFile(this.props.projectName)
+	}
+
+  compressSyncedFile(projectName) {
     console.log('Compressing file')
 
-    let appPath = remote.app.getAppPath()  
+		let appPath = remote.app.getAppPath()  
 
-    zipFolder(appPath + '/Synced-Files/Testing.logicx', appPath + '/Synced-Files/Testing.logicx.zip', function(err) {
+    zipFolder(appPath + '/Synced-Files/' + projectName, appPath + '/Synced-Files/' + projectName + '.zip', function(err) {
       if(err) {
           console.log('oh no!', err);
       } else {
-          console.log('EXCELLENT');
+				console.log('FILE COMPRESSED')
       }
     });
 	}
+
+	uploadFile(e) {
+		console.log(localStorage.getItem('access_token'))
+		
+		if (localStorage.getItem('access_token')) {
+			let file = e.target.files[0];
+			var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
+			var uploadTask = storageRef.put(file);
+
+			uploadTask.on('state_changed', function(snapshot){
+				var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				console.log('Upload is ' + progress + '% done');
+				switch (snapshot.state) {
+					case firebase.storage.TaskState.PAUSED: // or 'paused'
+						console.log('Upload is paused');
+						break;
+					case firebase.storage.TaskState.RUNNING: // or 'running'
+						console.log('Upload is running');
+						break;
+				}
+			}, function(error) {
+				console.log(error)
+			}, function() {
+				var downloadURL = uploadTask.snapshot.downloadURL;
+			});
+		}	else {
+			console.log('NO ACCESS')
+		}
+  }
 	
 	watchFileOpened(watchFilePath, projectName) {
     fs.watchFile(watchFilePath, function(curr, prev){
@@ -64,7 +101,7 @@ class ProjectsListItem extends Component {
 					<button onClick={this.openFile}>Open</button>
 				</div>
 				<div className='projectsListItemButton'>
-					<button>Commit</button>
+					<button onClick={this.commitFile}>Commit</button>
 				</div>
       </div>
     )

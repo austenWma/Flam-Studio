@@ -14,6 +14,7 @@ class LandingPageDropZone extends Component {
     super(props)
     this.state = {
     };
+    this.watchFileDropped = this.watchFileDropped.bind(this)
   }
 
   componentDidMount() {
@@ -22,19 +23,16 @@ class LandingPageDropZone extends Component {
         e.stopPropagation();
         
         for (let f of e.dataTransfer.files) {
-            console.log('File(s) you dragged here: ', f.path, f, this.props)
+          console.log('File(s) you dragged here: ', f.path, f, this.props)
 
-            // Gets the path to the electron App dir
-            let appPath = remote.app.getAppPath()
+          // Gets the path to the electron App dir
+          let appPath = remote.app.getAppPath()
 
-            // Persists current file synced to LS
-            localStorage.setItem('currSyncFilePath', appPath + '/Synced-Files/' + f.name)
+          fs.copy(f.path, appPath + '/Synced-Files/' + f.name)
 
-            fs.copy(f.path, appPath + '/Synced-Files/' + f.name)
-
-            shell.openItem(appPath + '/Synced-Files/' + f.name);
-            
-            this.props.watchFileDropped(appPath + '/Synced-Files/' + f.name)
+          shell.openItem(appPath + '/Synced-Files/' + f.name);
+          
+          this.watchFileDropped(appPath + '/Synced-Files/' + f.name, f.name)
         }
     });
 
@@ -44,9 +42,19 @@ class LandingPageDropZone extends Component {
     });
   }
 
+  watchFileDropped(watchFilePath, projectName) {
+    fs.watchFile(watchFilePath, function(curr, prev){
+      console.log("File Changed", curr, prev);
+
+      new Notification(projectName, {
+        body: 'File Saved'
+      })
+    })
+  }
+
   render() {
     return (
-      <div>
+      <div id='landingPageDropZoneContainer'>
         Sync Your Files Here
       </div>
     )
