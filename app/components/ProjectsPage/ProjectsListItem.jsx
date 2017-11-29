@@ -37,10 +37,10 @@ class ProjectsListItem extends Component {
 	}
 
 	commitFile() {
-		this.compressSyncedFile(this.props.projectName)
+		this.compressSyncedFile(this.props.projectName, this.uploadFile)
 	}
 
-  compressSyncedFile(projectName) {
+  compressSyncedFile(projectName, uploadCallback) {
     console.log('Compressing file')
 
 		let appPath = remote.app.getAppPath()  
@@ -50,15 +50,21 @@ class ProjectsListItem extends Component {
           console.log('oh no!', err);
       } else {
 				console.log('FILE COMPRESSED')
+
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '.zip', function read(err, data) {
+					if (err) {
+							throw err;
+					}
+					uploadCallback(data)
+				})
       }
     });
 	}
 
-	uploadFile(e) {
+	uploadFile(file) {
 		console.log(localStorage.getItem('access_token'))
 		
 		if (localStorage.getItem('access_token')) {
-			let file = e.target.files[0];
 			var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
 			var uploadTask = storageRef.put(file);
 
@@ -75,6 +81,7 @@ class ProjectsListItem extends Component {
 				}
 			}, function(error) {
 				console.log(error)
+				alert('Authentication Timed Out!')
 			}, function() {
 				var downloadURL = uploadTask.snapshot.downloadURL;
 			});
