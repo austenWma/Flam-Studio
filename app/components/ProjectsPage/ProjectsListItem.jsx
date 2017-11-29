@@ -10,6 +10,7 @@ var remote = window.require('electron').remote
 var zipFolder = window.require('zip-folder')
 const {shell} = window.require('electron')
 const {dialog} = window.require('electron').remote
+const prompt = window.require('electron-prompt');
 
 import { firebaseRef } from '../../Firebase/firebase.js'
 import * as firebase from 'firebase'
@@ -63,31 +64,44 @@ class ProjectsListItem extends Component {
 
 	uploadFile(file) {
 		console.log(localStorage.getItem('access_token'))
-		
-		if (localStorage.getItem('access_token')) {
-			var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
-			var uploadTask = storageRef.put(file);
 
-			uploadTask.on('state_changed', function(snapshot){
-				var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-				console.log('Upload is ' + progress + '% done');
-				switch (snapshot.state) {
-					case firebase.storage.TaskState.PAUSED: // or 'paused'
-						console.log('Upload is paused');
-						break;
-					case firebase.storage.TaskState.RUNNING: // or 'running'
-						console.log('Upload is running');
-						break;
+		prompt({
+			title: 'Flam-Studio',
+			label: 'Commit Message',
+			value: 'Your commit message here',
+			inputAttrs: { 
+					type: 'text'
+			},
+			type: 'input', 
+		})
+		.then((r) => {
+				console.log('result', r); 
+				if (localStorage.getItem('access_token')) {
+					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/Testing.logicx.zip');
+					var uploadTask = storageRef.put(file);
+		
+					uploadTask.on('state_changed', function(snapshot){
+						var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+						console.log('Upload is ' + progress + '% done');
+						switch (snapshot.state) {
+							case firebase.storage.TaskState.PAUSED: // or 'paused'
+								console.log('Upload is paused');
+								break;
+							case firebase.storage.TaskState.RUNNING: // or 'running'
+								console.log('Upload is running');
+								break;
+						}
+					}, function(error) {
+						console.log(error)
+						alert('Authentication Timed Out!')
+					}, function() {
+						var downloadURL = uploadTask.snapshot.downloadURL;
+					});
+				}	else {
+					console.log('NO ACCESS')
 				}
-			}, function(error) {
-				console.log(error)
-				alert('Authentication Timed Out!')
-			}, function() {
-				var downloadURL = uploadTask.snapshot.downloadURL;
-			});
-		}	else {
-			console.log('NO ACCESS')
-		}
+		})
+		.catch(console.error);
   }
 	
 	watchFileOpened(watchFilePath, projectName) {
