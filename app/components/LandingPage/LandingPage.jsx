@@ -22,10 +22,18 @@ class LandingPage extends Component {
     this.state = {
     };
     this.goToProjectsPage = this.goToProjectsPage.bind(this)
+    this.logOut = this.logOut.bind(this)
   }
 
   goToProjectsPage() {
     this.props.history.push('/ProjectsPage')
+  }
+
+  logOut() {
+    firebase.auth().signOut().then(() => {
+      localStorage.setItem('access_token', null)
+      this.props.history.push('/')
+    })
   }
 
   render() {
@@ -40,6 +48,11 @@ class LandingPage extends Component {
         <div>
           <button onClick={this.goToProjectsPage}>
             My Projects
+          </button>
+        </div>
+        <div>
+          <button onClick={this.logOut}>
+            Log Out
           </button>
         </div>
       </div>
