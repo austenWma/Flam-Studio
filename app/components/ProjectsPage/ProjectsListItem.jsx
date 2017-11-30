@@ -80,60 +80,87 @@ class ProjectsListItem extends Component {
 	}
 
 	uploadFile(file, projectName) {
-		console.log(localStorage.getItem('access_token'))
 
-		// Prompting for Commit messages
-		prompt({
-			title: 'Flam-Studio',
-			label: 'Commit Message',
-			value: 'Your commit message here',
-			inputAttrs: { 
-					type: 'text'
-			},
-			type: 'input', 
-		})
-		.then((r) => {
-				console.log('Prompt result', r); 
+		let appPath = remote.app.getAppPath()
 
-				if (r === null) {
-					console.log('Canceled.')
-				}	else if (r !== 'Your commit message here') {
-
-					let commitTime = Date()
-
-					let projectMetaData = {
-						customMetadata: {
-							commitMessage: r,
-							commitTime: commitTime
-						}
-					}
-
-					// Firebase file upload
-					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/' + projectName + '/' + Date() + ' | ' + r);
-					var uploadTask = storageRef.put(file, projectMetaData);
-		
-					uploadTask.on('state_changed', function(snapshot){
-						var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-						console.log('Upload is ' + progress + '% done');
-						switch (snapshot.state) {
-							case firebase.storage.TaskState.PAUSED: // or 'paused'
-								console.log('Upload is paused');
-								break;
-							case firebase.storage.TaskState.RUNNING: // or 'running'
-								console.log('Upload is running');
-								break;
-						}
-					}, function(error) {
-						console.log(error)
-						alert('Authentication Timed Out!')
-					}, function() {
-						var downloadURL = uploadTask.snapshot.downloadURL;
-					});
-				}	else if (r === 'Your commit message here') {
-					alert('Make a new commit message!')
+		fs.readdir(appPath + '/Synced-Files/' + this.props.projectName, (err, files) => {
+			let fileExists = false
+			for (let i = 0; i < files.length; i++) {
+				if (files[i][0] === '0' && files[i][1] === '.') {
+					fileExists = true
 				}
-		})
-		.catch(console.error);
+			}
+				
+			if (fileExists) {
+				// Project exists, Normal Upload
+				console.log('EXISTS')
+
+			}	else {
+				// Project doesn't exist, create new project
+
+				let newProjectID = Math.random().toString(36)
+
+				// COMMENCING PROJECT CREATION AND FIRST COMMIT
+				// Prompting for Commit messages
+				prompt({
+					title: 'Flam-Studio',
+					label: 'Commit Message',
+					value: 'Your commit message here',
+					inputAttrs: { 
+							type: 'text'
+					},
+					type: 'input', 
+				})
+				.then((r) => {
+						console.log('Prompt result', r); 
+
+						if (r === null) {
+							console.log('Canceled.')
+						}	else if (r !== 'Your commit message here') {
+
+							let commitTime = Date()
+
+							let projectMetaData = {
+								customMetadata: {
+									commitMessage: r,
+									commitTime: commitTime
+								}
+							}
+
+							// Firebase file upload
+							var storageRef = firebase.storage().ref('/' + newProjectID + '/' + projectName + '/' + Date() + ' | ' + r);
+							var uploadTask = storageRef.put(file, projectMetaData);
+				
+							uploadTask.on('state_changed', function(snapshot){
+								var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+								console.log('Upload is ' + progress + '% done');
+								switch (snapshot.state) {
+									case firebase.storage.TaskState.PAUSED: // or 'paused'
+										console.log('Upload is paused');
+										break;
+									case firebase.storage.TaskState.RUNNING: // or 'running'
+										console.log('Upload is running');
+										break;
+								}
+							}, function(error) {
+								console.log(error)
+								alert('Authentication Timed Out!')
+							}, function() {
+								var downloadURL = uploadTask.snapshot.downloadURL;
+							});
+						}	else if (r === 'Your commit message here') {
+							alert('Make a new commit message!')
+						}
+				})
+				.catch(console.error);
+
+				// GENERATE FILE CONTAINING PROJECT REFERENCE ID
+
+				fs.mkdir(appPath + '/Synced-Files/' + projectName + '/' + newProjectID);
+
+				// *** EVENTUALLY MAKE A FIREBASE REFERENCE AS WELL *** // 
+			}
+    })
   }
 	
 	watchFileOpened(watchFilePath, projectName) {
