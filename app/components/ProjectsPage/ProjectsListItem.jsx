@@ -19,6 +19,7 @@ class ProjectsListItem extends Component {
   constructor (props) {
     super(props)
     this.state = {
+			fullProjectName: ''
 		};
 		this.watchFileOpened = this.watchFileOpened.bind(this)
 		this.compressSyncedFile = this.compressSyncedFile.bind(this)
@@ -26,15 +27,29 @@ class ProjectsListItem extends Component {
 		this.commitFile = this.commitFile.bind(this)
 		this.uploadFile = this.uploadFile.bind(this)
 	}
+
+	componentDidMount() {
+		let appPath = remote.app.getAppPath()
+
+		fs.readdir(appPath + '/Synced-Files/' + this.props.projectName, (err, files) => {
+			let filteredFile = files.filter((file) => {
+				return file !== '.DS_Store' && !file.includes('.zip')
+			})
+
+			this.setState({
+				fullProjectName: filteredFile
+			})
+    })
+	}
 	
 	openFile() {
 		let appPath = remote.app.getAppPath()
 
-		// Opens project in Logic
-		shell.openItem(appPath + '/Synced-Files/' + this.props.projectName);
-
+		shell.openItem(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.state.fullProjectName);
+		
 		// Watches project
-		this.watchFileOpened(appPath + '/Synced-Files/' + this.props.projectName, this.props.projectName)
+		this.watchFileOpened(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.state.fullProjectName, this.props.projectName)
+
 	}
 
 	commitFile() {
@@ -42,17 +57,19 @@ class ProjectsListItem extends Component {
 	}
 
   compressSyncedFile(projectName, uploadCallback) {
-    console.log('Compressing file')
+    console.log('Compressing file', this.props.projectName)
 
 		let appPath = remote.app.getAppPath()  
 
-    zipFolder(appPath + '/Synced-Files/' + projectName, appPath + '/Synced-Files/' + projectName + '.zip', function(err) {
+		console.log('HERE', appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName)
+
+    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName, appPath + '/Synced-Files/' + projectName + '/' + projectName + '.zip', function(err) {
       if(err) {
           console.log('oh no!', err);
       } else {
 				console.log('FILE COMPRESSED')
 
-				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '.zip', function read(err, data) {
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + projectName + '.zip', function read(err, data) {
 					if (err) {
 							throw err;
 					}
@@ -92,7 +109,7 @@ class ProjectsListItem extends Component {
 					}
 
 					// Firebase file upload
-					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/' + projectName);
+					var storageRef = firebase.storage().ref('/' + localStorage.getItem('access_token') + '/' + projectName + '/' + Date() + ' | ' + r);
 					var uploadTask = storageRef.put(file, projectMetaData);
 		
 					uploadTask.on('state_changed', function(snapshot){
@@ -135,6 +152,9 @@ class ProjectsListItem extends Component {
         <div>{this.props.projectName}</div>
 				<div className='projectsListItemButton'>
 					<button onClick={this.openFile}>Open</button>
+				</div>
+				<div className='projectsListItemButton'>
+					<button onClick={this.commitFile}>Commit History</button>
 				</div>
 				<div className='projectsListItemButton'>
 					<button onClick={this.commitFile}>Commit</button>

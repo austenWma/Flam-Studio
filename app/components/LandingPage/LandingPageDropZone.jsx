@@ -28,11 +28,18 @@ class LandingPageDropZone extends Component {
           // Gets the path to the electron App dir
           let appPath = remote.app.getAppPath()
 
-          fs.copy(f.path, appPath + '/Synced-Files/' + f.name)
+          let dotIndex = f.name.indexOf('.')
+          let fileNameWithoutDot = f.name.slice(0, dotIndex)
 
-          shell.openItem(appPath + '/Synced-Files/' + f.name);
+          if (!fs.existsSync(appPath + '/Synced-Files/' + fileNameWithoutDot)){
+            fs.mkdir(appPath + '/Synced-Files/' + fileNameWithoutDot);
+          }
+
+          fs.copy(f.path, appPath + '/Synced-Files/' + fileNameWithoutDot + '/' + f.name)
+
+          shell.openItem(appPath + '/Synced-Files/' + fileNameWithoutDot + '/' + f.name);
           
-          this.watchFileDropped(appPath + '/Synced-Files/' + f.name, f.name)
+          this.watchFileDropped(appPath + '/Synced-Files/' + fileNameWithoutDot + '/' + f.name, f.name)
         }
     });
 
