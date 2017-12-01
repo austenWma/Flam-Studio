@@ -30,17 +30,39 @@ class ProjectsList extends Component {
   updateFiles() {
 
 		// We need to consult Firebase, for relevant Project ID's
-
-    let appPath = remote.app.getAppPath()
+	
+		let appPath = remote.app.getAppPath()
     fs.readdir(appPath + '/Synced-Files/', (err, files) => {
-			let filteredFiles = files.filter((file) => {
-				return file !== '.DS_Store' && !file.includes('.zip')
+			db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).once('value', (data) => {
+				// Construct an array of all files that exist on the desktop environment already 
+				// Iterate through the files associated with user
+
+				// With each file, match with array of existing files
+				// If doesn't exist, then we need to create a new directory following project item structure
+
+				for (var key in data.val()) {
+					if (!files.includes(data.val()[key])) {
+						fs.mkdir(appPath + '/Synced-Files/' + data.val()[key])
+						// *** The 0.1 is to remain consistent with other ProjectID files (Firebase didn't allow '.' in keys) *** //
+						fs.mkdir(appPath + '/Synced-Files/' + data.val()[key] + '/0.' + key)
+					}	
+				}
 			})
-			this.setState({
-					files: filteredFiles
-			})   
-    })
-  }
+			.then(() => {
+				fs.readdir(appPath + '/Synced-Files/', (err, files) => {
+					let filteredFiles = files.filter((file) => {
+						return file !== '.DS_Store' && !file.includes('.zip')
+					})
+					this.setState({
+							files: filteredFiles
+					})   
+				})
+			})
+			.catch(err => {
+				console.log(err)
+			})
+		})
+	}
 
   goToHomePage() {
     this.props.history.push('/LandingPage')

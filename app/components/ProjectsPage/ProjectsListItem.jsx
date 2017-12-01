@@ -34,7 +34,7 @@ class ProjectsListItem extends Component {
 
 		fs.readdir(appPath + '/Synced-Files/' + this.props.projectName, (err, files) => {
 			let filteredFile = files.filter((file) => {
-				return file !== '.DS_Store' && !file.includes('.zip')
+				return file !== '.DS_Store' && !file.includes('.zip') && !file.includes('0.')
 			})
 
 			this.setState({
@@ -158,7 +158,7 @@ class ProjectsListItem extends Component {
 				fs.mkdir(appPath + '/Synced-Files/' + projectName + '/' + newProjectID);
 
 				// ADD PROJECT KEY TO USER'S FB DATA
-				console.log('HEREEERERERER')
+
 				db.ref(`users/${localStorage.getItem('access_token')}`).once('value', (user) => {
 
 					let cutProjectID = newProjectID.slice(2)
