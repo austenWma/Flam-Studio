@@ -30,7 +30,7 @@ class ProjectsList extends Component {
   updateFiles() {
 
 		// We need to consult Firebase, for relevant Project ID's
-	
+
 		let appPath = remote.app.getAppPath()
     fs.readdir(appPath + '/Synced-Files/', (err, files) => {
 			db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).once('value', (data) => {

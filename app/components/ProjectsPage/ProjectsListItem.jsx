@@ -92,7 +92,6 @@ class ProjectsListItem extends Component {
 				
 			if (fileExists) {
 				// Project exists, Normal Upload
-				console.log('EXISTS')
 				alert('Commit Made')
 			}	else {
 				// Project doesn't exist, create new project
