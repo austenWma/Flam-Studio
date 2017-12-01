@@ -28,6 +28,7 @@ class SignUp extends Component {
 					firebase.database().ref(`users/${data.uid.substring(0, 10)}`).set({
 							email: data.email,
 							uid: data.uid.substring(0, 10),
+							projectIDs: ''
 					})
 			})
 			.catch(err => {

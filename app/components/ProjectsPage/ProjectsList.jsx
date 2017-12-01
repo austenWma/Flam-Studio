@@ -9,6 +9,10 @@ import $ from 'jquery'
 const fs = window.require('fs-extra')
 var remote = window.require('electron').remote
 
+import { firebaseRef } from '../../Firebase/firebase.js'
+import * as firebase from 'firebase'
+const db = firebase.database()
+
 class ProjectsList extends Component {
   constructor (props) {
     super(props)
@@ -24,6 +28,9 @@ class ProjectsList extends Component {
   }
 
   updateFiles() {
+
+		// We need to consult Firebase, for relevant Project ID's
+
     let appPath = remote.app.getAppPath()
     fs.readdir(appPath + '/Synced-Files/', (err, files) => {
 			let filteredFiles = files.filter((file) => {

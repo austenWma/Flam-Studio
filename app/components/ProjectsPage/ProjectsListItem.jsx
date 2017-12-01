@@ -14,6 +14,7 @@ const prompt = window.require('electron-prompt');
 
 import { firebaseRef } from '../../Firebase/firebase.js'
 import * as firebase from 'firebase'
+const db = firebase.database()
 
 class ProjectsListItem extends Component {
   constructor (props) {
@@ -61,8 +62,6 @@ class ProjectsListItem extends Component {
 
 		let appPath = remote.app.getAppPath()  
 
-		console.log('HERE', appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName)
-
     zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName, appPath + '/Synced-Files/' + projectName + '/' + projectName + '.zip', function(err) {
       if(err) {
           console.log('oh no!', err);
@@ -94,7 +93,7 @@ class ProjectsListItem extends Component {
 			if (fileExists) {
 				// Project exists, Normal Upload
 				console.log('EXISTS')
-
+				alert('Commit Made')
 			}	else {
 				// Project doesn't exist, create new project
 
@@ -158,7 +157,20 @@ class ProjectsListItem extends Component {
 
 				fs.mkdir(appPath + '/Synced-Files/' + projectName + '/' + newProjectID);
 
-				// *** EVENTUALLY MAKE A FIREBASE REFERENCE AS WELL *** // 
+				// ADD PROJECT KEY TO USER'S FB DATA
+				console.log('HEREEERERERER')
+				db.ref(`users/${localStorage.getItem('access_token')}`).once('value', (user) => {
+					let prevProjectIDs = user.val().projectIDs || ''
+					db.ref(`users/${localStorage.getItem('access_token')}`).update({
+						projectIDs: prevProjectIDs + newProjectID + ' | '
+					})
+					.catch(err => {
+						console.log(err)
+					})
+				})
+				.catch(err => {
+					console.log(err)
+				})
 			}
     })
   }
