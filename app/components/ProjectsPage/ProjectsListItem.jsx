@@ -160,10 +160,14 @@ class ProjectsListItem extends Component {
 				// ADD PROJECT KEY TO USER'S FB DATA
 				console.log('HEREEERERERER')
 				db.ref(`users/${localStorage.getItem('access_token')}`).once('value', (user) => {
-					let prevProjectIDs = user.val().projectIDs || ''
-					db.ref(`users/${localStorage.getItem('access_token')}`).update({
-						projectIDs: prevProjectIDs + newProjectID + ' | '
-					})
+
+					let cutProjectID = newProjectID.slice(2)
+
+					let updateProjectObj = {
+						[cutProjectID]: projectName
+					}
+
+					db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).update(updateProjectObj)
 					.catch(err => {
 						console.log(err)
 					})
