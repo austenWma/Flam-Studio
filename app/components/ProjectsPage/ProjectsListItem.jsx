@@ -61,16 +61,17 @@ class ProjectsListItem extends Component {
     console.log('Compressing file', this.props.projectName)
 
 		let appPath = remote.app.getAppPath()  
+		let fullProjectName = this.state.fullProjectName
 
-    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName, appPath + '/Synced-Files/' + projectName + '/' + projectName + '.zip', function(err) {
+    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName, appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName	 + '.zip', function(err) {
       if(err) {
           console.log('oh no!', err);
       } else {
 				console.log('FILE COMPRESSED')
 
-				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + projectName + '.zip', function read(err, data) {
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
 					if (err) {
-							throw err;
+						throw err;
 					}
 					uploadCallback(data, projectName)
 				})
@@ -111,18 +112,9 @@ class ProjectsListItem extends Component {
 							console.log('Canceled.')
 						}	else if (r !== 'Your commit message here') {
 
-							let commitTime = Date()
-
-							let projectMetaData = {
-								customMetadata: {
-									commitMessage: r,
-									commitTime: commitTime
-								}
-							}
-
 							// Firebase file upload
 							var storageRef = firebase.storage().ref('/' + existingProjectID + '/' + projectName + '/' + Date() + ' | ' + r);
-							var uploadTask = storageRef.put(file, projectMetaData);
+							var uploadTask = storageRef.put(file);
 				
 							uploadTask.on('state_changed', function(snapshot){
 								var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -192,18 +184,9 @@ class ProjectsListItem extends Component {
 							console.log('Canceled.')
 						}	else if (r !== 'Your commit message here') {
 
-							let commitTime = Date()
-
-							let projectMetaData = {
-								customMetadata: {
-									commitMessage: r,
-									commitTime: commitTime
-								}
-							}
-
 							// Firebase file upload
 							var storageRef = firebase.storage().ref('/' + newProjectID + '/' + projectName + '/' + Date() + ' | ' + r);
-							var uploadTask = storageRef.put(file, projectMetaData);
+							var uploadTask = storageRef.put(file);
 				
 							uploadTask.on('state_changed', function(snapshot){
 								var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
