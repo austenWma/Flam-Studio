@@ -69,7 +69,7 @@ class ProjectsListItem extends Component {
       } else {
 				console.log('FILE COMPRESSED')
 
-				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', "utf8", function read(err, data) {
 					if (err) {
 						throw err;
 					}
