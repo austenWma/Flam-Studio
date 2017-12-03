@@ -69,7 +69,7 @@ class ProjectsListItem extends Component {
       } else {
 				console.log('FILE COMPRESSED')
 
-				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', "utf8", function read(err, data) {
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
 					if (err) {
 						throw err;
 					}
@@ -106,14 +106,19 @@ class ProjectsListItem extends Component {
 					type: 'input', 
 				})
 				.then((r) => {
-						console.log('Prompt result', r); 
+					console.log('Prompt result', r); 
 
-						if (r === null) {
-							console.log('Canceled.')
-						}	else if (r !== 'Your commit message here') {
+					r = r.split(' ').join('_')
+
+					if (r === null) {
+						console.log('Canceled.')
+					}	else if (r !== 'Your commit message here') {
+						db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).once('value').then(data => {
+							
+							let commitNumber = (!data.val()) ? 1 : data.val().length
 
 							// Firebase file upload
-							var storageRef = firebase.storage().ref('/' + existingProjectID + '/' + projectName + '/' + Date() + ' | ' + r);
+							var storageRef = firebase.storage().ref('/' + existingProjectID + '/' + projectName + '/' + projectName + commitNumber + '.logicx.zip');
 							var uploadTask = storageRef.put(file);
 				
 							uploadTask.on('state_changed', function(snapshot){
@@ -132,33 +137,31 @@ class ProjectsListItem extends Component {
 								alert('Authentication Timed Out!')
 							}, function() {
 								var downloadURL = uploadTask.snapshot.downloadURL;
-								
-								db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).once('value').then(data => {
-									console.log('Commit logged in Firebase')
-									if (!data.val()) {
-										// Create new property with count starting at 1
-										let updateCommitObj = {
-											1: downloadURL + ' | ' + r
-										}
-										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
-									}	else {
-										// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
-										let updateCommitObj = {
-											[data.val().length]: downloadURL + ' | ' + r
-										}
-										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
+								console.log('THIRD COMMIT')
+
+								if (!data.val()) {
+									// Create new property with count starting at 1
+									let updateCommitObj = {
+										1: downloadURL + ' | ' + r
 									}
-								})
-								.catch(err => {
-									console.log(err)
-								})
-
-
+									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
+								}	else {
+									// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
+									let updateCommitObj = {
+										[data.val().length]: downloadURL + ' | ' + r
+									}
+									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
+								}
+	
 								alert('Commit Made')
 							});
-						}	else if (r === 'Your commit message here') {
-							alert('Make a new commit message!')
-						}
+						})
+						.catch(err => {
+							console.log(err)
+						})
+					}	else if (r === 'Your commit message here') {
+						alert('Make a new commit message!')
+					}
 				})
 				.catch(console.error);
 			}	else {
@@ -183,30 +186,32 @@ class ProjectsListItem extends Component {
 						if (r === null) {
 							console.log('Canceled.')
 						}	else if (r !== 'Your commit message here') {
+							db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).once('value').then(data => {
+								console.log('Commit logged in Firebase')
 
-							// Firebase file upload
-							var storageRef = firebase.storage().ref('/' + newProjectID + '/' + projectName + '/' + Date() + ' | ' + r);
-							var uploadTask = storageRef.put(file);
-				
-							uploadTask.on('state_changed', function(snapshot){
-								var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-								console.log('Upload is ' + progress + '% done');
-								switch (snapshot.state) {
-									case firebase.storage.TaskState.PAUSED: // or 'paused'
-										console.log('Upload is paused');
-										break;
-									case firebase.storage.TaskState.RUNNING: // or 'running'
-										console.log('Upload is running');
-										break;
-								}
-							}, function(error) {
-								console.log(error)
-								alert('Authentication Timed Out!')
-							}, function() {
-								var downloadURL = uploadTask.snapshot.downloadURL;
+								let commitNumber = (!data.val()) ? 1 : data.val().length
 
-								db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).once('value').then(data => {
-									console.log('Commit logged in Firebase')
+								// Firebase file upload
+								var storageRef = firebase.storage().ref('/' + newProjectID + '/' + projectName + '/' + projectName + commitNumber + '.logicx.zip');
+								var uploadTask = storageRef.put(file);
+					
+								uploadTask.on('state_changed', function(snapshot){
+									var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+									console.log('Upload is ' + progress + '% done');
+									switch (snapshot.state) {
+										case firebase.storage.TaskState.PAUSED: // or 'paused'
+											console.log('Upload is paused');
+											break;
+										case firebase.storage.TaskState.RUNNING: // or 'running'
+											console.log('Upload is running');
+											break;
+									}
+								}, function(error) {
+									console.log(error)
+									alert('Authentication Timed Out!')
+								}, function() {
+									var downloadURL = uploadTask.snapshot.downloadURL;
+
 									if (!data.val()) {
 										// Create new property with count starting at 1
 										let updateCommitObj = {
@@ -215,13 +220,17 @@ class ProjectsListItem extends Component {
 										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}	else {
 										// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
+										let updateCommitObj = {
+											[data.val().length]: downloadURL + ' | ' + r
+										}
+										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}
-								})
-								.catch(err => {
-									console.log(err)
-								})
 
-							});
+								});
+							})
+							.catch(err => {
+								console.log(err)
+							})
 						}	else if (r === 'Your commit message here') {
 							alert('Make a new commit message!')
 						}
