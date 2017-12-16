@@ -13,6 +13,7 @@ var zipFolder = window.require('zip-folder');
 
 import { firebaseRef } from '../../Firebase/firebase.js'
 import * as firebase from 'firebase'
+const db = firebase.database()
 import path from 'path'
 
 var download = window.require('download-file')
@@ -24,7 +25,35 @@ class LandingPage extends Component {
     };
     this.goToProjectsPage = this.goToProjectsPage.bind(this)
     this.logOut = this.logOut.bind(this)
-    this.dlDemo = this.dlDemo.bind(this)
+    this.dlCommit = this.dlCommit.bind(this)
+  }
+
+  componentDidMount() {
+
+    // Listening for any openingProject command coming from the web app
+    // Will then take the corresponding data DLlink and open it in Logic
+    // First making sure that the initial check isn't opening anything
+
+    db.ref(`users/${localStorage.getItem('access_token')}`).update({
+      openingProject: ''
+    })
+    .then(() => {
+      console.log('Opening Projects Wiped')
+
+      db.ref(`users/${localStorage.getItem('access_token')}/openingProject`).on('value', (data) => {
+        if (data.val().length > 0) {
+          // this.dlCommit(data.val())
+          console.log(data.val())
+          let dlLink = data.val().split(' | ')[0]
+          let fileName = data.val().split(' | ')[1] + '.logicx.zip'
+
+          this.dlCommit(dlLink, fileName)
+        }
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   goToProjectsPage() {
@@ -38,18 +67,16 @@ class LandingPage extends Component {
     })
   }
 
-  dlDemo() {
+  dlCommit(dlLink, fileName) {
 
     let appPath = remote.app.getAppPath()
 
-    var url = "https://firebasestorage.googleapis.com/v0/b/flam-studio.appspot.com/o/0.184wyx2tdj1%2FTesting%202%2FTesting%2021.logicx.zip?alt=media&token=2fa5b121-9cf5-4f65-8943-25fd68b4f90a"
-    
     var options = {
         directory: appPath + '/Synced-Files/',
-        filename: "Testing 21.logicx.zip"
+        filename: fileName
     }
       
-    download(url, options, function(err){
+    download(dlLink, options, function(err){
         if (err) throw err
     }) 
   }
@@ -73,7 +100,6 @@ class LandingPage extends Component {
             Log Out
           </button>
         </div>
-        <button onClick={this.dlDemo}>Download Demo</button>
       </div>
     )
   }
