@@ -10,6 +10,7 @@ import $ from 'jquery'
 const fs = window.require('fs-extra')
 var remote = window.require('electron').remote;
 var zipFolder = window.require('zip-folder');
+const {shell} = window.require('electron')
 
 import { firebaseRef } from '../../Firebase/firebase.js'
 import * as firebase from 'firebase'
@@ -25,7 +26,8 @@ class LandingPage extends Component {
     };
     this.goToProjectsPage = this.goToProjectsPage.bind(this)
     this.logOut = this.logOut.bind(this)
-    this.dlCommit = this.dlCommit.bind(this)
+    this.dlCommitFromWeb = this.dlCommitFromWeb.bind(this)
+    this.openCommitFromWeb = this.openCommitFromWeb.bind(this)
   }
 
   componentDidMount() {
@@ -42,12 +44,11 @@ class LandingPage extends Component {
 
       db.ref(`users/${localStorage.getItem('access_token')}/openingProject`).on('value', (data) => {
         if (data.val().length > 0) {
-          // this.dlCommit(data.val())
-          console.log(data.val())
+
           let dlLink = data.val().split(' | ')[0]
           let fileName = data.val().split(' | ')[1] + '.logicx.zip'
 
-          this.dlCommit(dlLink, fileName)
+          this.dlCommitFromWeb(dlLink, fileName)
         }
       })
     })
@@ -67,7 +68,7 @@ class LandingPage extends Component {
     })
   }
 
-  dlCommit(dlLink, fileName) {
+  dlCommitFromWeb(dlLink, fileName) {
 
     let appPath = remote.app.getAppPath()
 
@@ -79,6 +80,25 @@ class LandingPage extends Component {
     download(dlLink, options, function(err){
         if (err) throw err
     }) 
+
+    setTimeout(() => { 
+      this.openCommitFromWeb(appPath + '/Synced-Files/' + fileName) 
+    }, 1000)
+  }
+
+  openCommitFromWeb(filePath) {
+    shell.openItem(filePath);
+    setTimeout(() => { 
+      shell.openItem(filePath.slice(0, filePath.length - 4))
+      
+      // Re-wipe FB OpeningProject
+      db.ref(`users/${localStorage.getItem('access_token')}`).update({
+        openingProject: ''
+      })
+      .then(() => {
+        console.log('Opening Projects Wiped')
+      })
+    }, 1000)
   }
 
   render() {
