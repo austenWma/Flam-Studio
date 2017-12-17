@@ -20,7 +20,6 @@ class ProjectsListItem extends Component {
   constructor (props) {
     super(props)
     this.state = {
-			fullProjectName: ''
 		};
 		this.watchFileOpened = this.watchFileOpened.bind(this)
 		this.compressSyncedFile = this.compressSyncedFile.bind(this)
@@ -46,10 +45,12 @@ class ProjectsListItem extends Component {
 	openFile() {
 		let appPath = remote.app.getAppPath()
 
-		shell.openItem(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.state.fullProjectName);
+		shell.openItem(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.props.projectName + '.logicx');
+
+		console.log('OPENNNN', appPath + '/Synced-Files/' + this.props.projectName + '/' + this.props.projectName + '.logicx')
 		
 		// Watches project
-		this.watchFileOpened(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.state.fullProjectName, this.props.projectName)
+		this.watchFileOpened(appPath + '/Synced-Files/' + this.props.projectName + '/' + this.props.projectName + '.logicx', this.props.projectName)
 
 	}
 
@@ -61,9 +62,9 @@ class ProjectsListItem extends Component {
     console.log('Compressing file', this.props.projectName)
 
 		let appPath = remote.app.getAppPath()  
-		let fullProjectName = this.state.fullProjectName
+		let fullProjectName = this.props.projectName + '.logicx'
 
-    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName, appPath + '/Synced-Files/' + projectName + '/' + this.state.fullProjectName	 + '.zip', function(err) {
+    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx', appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx' + '.zip', function(err) {
       if(err) {
           console.log('oh no!', err);
       } else {
