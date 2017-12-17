@@ -73,7 +73,7 @@ class ProjectsListItem extends Component {
 				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
 					if (err) {
 						throw err;
-					}
+					} 
 					uploadCallback(data, projectName)
 				})
       }
