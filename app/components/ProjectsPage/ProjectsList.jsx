@@ -32,6 +32,8 @@ class ProjectsList extends Component {
 		// We need to consult Firebase, for relevant Project ID's
 
 		let appPath = remote.app.getAppPath()
+		let projectIDarr = []
+
     fs.readdir(appPath + '/Synced-Files/', (err, files) => {
 			db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).once('value', (data) => {
 				// Construct an array of all files that exist on the desktop environment already 
@@ -44,12 +46,23 @@ class ProjectsList extends Component {
 					if (!files.includes(data.val()[key])) {
 						fs.mkdir(appPath + '/Synced-Files/' + data.val()[key])
 						// *** The 0.1 is to remain consistent with other ProjectID files (Firebase didn't allow '.' in keys) *** //
-						fs.mkdir(appPath + '/Synced-Files/' + data.val()[key] + '/0.' + key)
+						projectIDarr.push('/0.' + key)
 					}	
 				}
 			})
 			.then(() => {
 				fs.readdir(appPath + '/Synced-Files/', (err, files) => {
+
+					// Loop handles async issues with creating ID -> project directories
+
+					for (let i = 1; i < files.length; i++) {
+						fs.readdir(appPath + '/Synced-Files/' + files[i], (err, innerFiles) => {
+							if (innerFiles.length === 0) {
+								fs.mkdir(appPath + '/Synced-Files/' + files[i] + projectIDarr[i - 1])
+							}
+						})
+					}
+
 					let filteredFiles = files.filter((file) => {
 						return file !== '.DS_Store' && !file.includes('.zip')
 					})
