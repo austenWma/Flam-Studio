@@ -109,7 +109,7 @@ class ProjectsListItem extends Component {
 				.then((r) => {
 					console.log('Prompt result', r); 
 
-					r = r.split(' ').join('_')
+					r = r.split(' ').join(' ')
 
 					if (r === null) {
 						console.log('Canceled.')
