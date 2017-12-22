@@ -18,14 +18,43 @@ class CommitsListItem extends Component {
   constructor (props) {
     super(props)
     this.state = {
-    };
+		};
+		this.openCommit = this.openCommit.bind(this)
+		this.dlCommitFromWeb = this.dlCommitFromWeb.bind(this)
+	}
+
+	openCommit() {
+		this.dlCommitFromWeb('https://' + this.props.commitLink, localStorage.getItem('current_commits_project') + '.logicx.zip')
+	}
+
+	dlCommitFromWeb(dlLink, fileName) {
+		console.log(dlLink)
+		let appPath = remote.app.getAppPath()
+
+		var options = {
+				directory: appPath + '/Synced-Files/',
+				filename: fileName
+		}
+			
+		download(dlLink, options, function(err){
+				if (err) throw err
+		}) 
+
+		let filePath = appPath + '/Synced-Files/' + fileName
+
+		setTimeout(() => { 
+			shell.openItem(filePath);
+			setTimeout(() => { 
+				shell.openItem(filePath.slice(0, filePath.length - 4))
+			}, 1000)
+		}, 1000)
 	}
 
   render() {
     return (
       <div>
 				<div>{this.props.commitDescription}</div>
-				<button>Open</button>
+				<button onClick={this.openCommit}>Open</button>
       </div>
     )
   }

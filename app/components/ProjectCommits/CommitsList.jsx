@@ -23,7 +23,7 @@ class CommitsList extends Component {
 				<h2>{localStorage.getItem('current_commits_project')}</h2>
 				<div>
 				{localStorage.getItem('current_commits_list').split(',https://').slice(1).map(commit =>
-					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.slice(' | ')[0]}/> 
+					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.split(' | ')[0]}/> 
 				)}
 				</div>
       </div>
