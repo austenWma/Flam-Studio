@@ -142,13 +142,13 @@ class ProjectsListItem extends Component {
 								if (!data.val()) {
 									// Create new property with count starting at 1
 									let updateCommitObj = {
-										1: downloadURL + ' | ' + r
+										1: downloadURL + ' | ' + r + ' | ' + Date()
 									}
 									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
 								}	else {
 									// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
 									let updateCommitObj = {
-										[data.val().length]: downloadURL + ' | ' + r
+										[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date()
 									}
 									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
 								}
@@ -215,13 +215,13 @@ class ProjectsListItem extends Component {
 									if (!data.val()) {
 										// Create new property with count starting at 1
 										let updateCommitObj = {
-											1: downloadURL + ' | ' + r
+											1: downloadURL + ' | ' + r + ' | ' + Date()
 										}
 										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}	else {
 										// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
 										let updateCommitObj = {
-											[data.val().length]: downloadURL + ' | ' + r
+											[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date()
 										}
 										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}
@@ -282,13 +282,15 @@ class ProjectsListItem extends Component {
 			db.ref(`users/${localStorage.getItem('access_token')}/projectCommits`).once('value').then((data) => {
 				for (var key in data.val()) {
 					if (key === commitsProjectID) {
-						localStorage.setItem('current_commit_list', data.val()[key])
+						localStorage.setItem('current_commits_list', data.val()[key])
+						localStorage.setItem('current_commits_project', this.props.projectName)
 					}
 				}
 
-				this.props.projectsPageHistory.push('/Commits')
+				this.props.projectsPageHistory.push('/CommitsList')
 			})
 		})
+		.catch(err => console.log(err))
 	}
 
   render() {

@@ -4,29 +4,28 @@ import {Redirect, Link} from 'react-router-dom'
 
 import CommitsListItem from './CommitsListItem.jsx'
 
-import $ from 'jquery'
-
 const fs = window.require('fs-extra')
 var remote = window.require('electron').remote
-
-import { firebaseRef } from '../../Firebase/firebase.js'
-import * as firebase from 'firebase'
-const db = firebase.database()
 
 class CommitsList extends Component {
   constructor (props) {
     super(props)
     this.state = {
     };
-  }
+	}
+
+	// Splitting at ,https to create a unique break point for the string
 
   render() {
     return (
       <div>
         <h1>Flam Studio</h1>
-        <div>
-            <ProjectsList />
-        </div>
+				<h2>{localStorage.getItem('current_commits_project')}</h2>
+				<div>
+				{localStorage.getItem('current_commits_list').split(',https://').slice(1).map(commit =>
+					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.slice(' | ')[0]}/> 
+				)}
+				</div>
       </div>
     )
   }
