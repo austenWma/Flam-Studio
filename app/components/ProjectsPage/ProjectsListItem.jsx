@@ -26,6 +26,7 @@ class ProjectsListItem extends Component {
 		this.openFile = this.openFile.bind(this)
 		this.commitFile = this.commitFile.bind(this)
 		this.uploadFile = this.uploadFile.bind(this)
+		this.openCommits = this.openCommits.bind(this)
 	}
 
 	componentDidMount() {
@@ -108,8 +109,6 @@ class ProjectsListItem extends Component {
 				})
 				.then((r) => {
 					console.log('Prompt result', r); 
-
-					r = r.split(' ').join(' ')
 
 					if (r === null) {
 						console.log('Canceled.')
@@ -266,7 +265,31 @@ class ProjectsListItem extends Component {
         body: 'File Saved'
       })
     })
-  }
+	}
+	
+	openCommits() {
+
+		let commitsProjectID = ''
+
+		db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).once('value').then((data) => {
+			for (var key in data.val()) {
+				if (data.val()[key] === this.props.projectName) {
+					commitsProjectID = key
+				}
+			}
+		})
+		.then(() => {
+			db.ref(`users/${localStorage.getItem('access_token')}/projectCommits`).once('value').then((data) => {
+				for (var key in data.val()) {
+					if (key === commitsProjectID) {
+						localStorage.setItem('current_commit_list', data.val()[key])
+					}
+				}
+
+				this.props.projectsPageHistory.push('/Commits')
+			})
+		})
+	}
 
   render() {
     return (
@@ -276,7 +299,7 @@ class ProjectsListItem extends Component {
 					<button onClick={this.openFile}>Open</button>
 				</div>
 				<div className='projectsListItemButton'>
-					<button onClick={this.commitFile}>Commit History</button>
+					<button onClick={this.openCommits}>Commit History</button>
 				</div>
 				<div className='projectsListItemButton'>
 					<button onClick={this.commitFile}>Commit</button>

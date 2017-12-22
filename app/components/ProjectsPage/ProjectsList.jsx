@@ -22,7 +22,6 @@ class ProjectsList extends Component {
     this.state = {
         files: []
     };
-		this.goToHomePage = this.goToHomePage.bind(this)
 		this.updateFiles = this.updateFiles.bind(this)
 		this.dlCommitFromWeb = this.dlCommitFromWeb.bind(this)
   }
@@ -114,16 +113,12 @@ class ProjectsList extends Component {
 		})
 	}
 
-  goToHomePage() {
-    this.props.history.push('/LandingPage')
-  }
-
   render() {
     return (
       <div>
         <h2>Projects</h2>
         {this.state.files.map(file =>
-					<ProjectsListItem projectName={file}/> 
+					<ProjectsListItem projectName={file} projectsPageHistory={this.props.projectsPageHistory}/> 
 				)}
       </div>
     )

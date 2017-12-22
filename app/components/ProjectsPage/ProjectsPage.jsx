@@ -24,7 +24,7 @@ class ProjectsPage extends Component {
         <h1>Flam Studio</h1>
         <button onClick={this.goToHomePage}>Home Page</button>
         <div>
-            <ProjectsList />
+            <ProjectsList projectsPageHistory={this.props.history}/>
         </div>
       </div>
     )
