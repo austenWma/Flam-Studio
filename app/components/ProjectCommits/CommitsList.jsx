@@ -3,6 +3,7 @@ import {render} from 'react-dom'
 import {Redirect, Link} from 'react-router-dom'
 
 import CommitsListItem from './CommitsListItem.jsx'
+import LandingPageNavbar from '../LandingPage/LandingPageNavbar.jsx'
 
 const fs = window.require('fs-extra')
 var remote = window.require('electron').remote
@@ -12,11 +13,6 @@ class CommitsList extends Component {
     super(props)
     this.state = {
 		};
-		this.goBackToProjects = this.goBackToProjects.bind(this)
-	}
-
-	goBackToProjects() {
-		this.props.history.push('/ProjectsPage')
 	}
 
 	// Splitting at ,https to create a unique break point for the string
@@ -24,15 +20,12 @@ class CommitsList extends Component {
   render() {
     return (
       <div>
-        <h1>Flam Studio</h1>
+        <LandingPageNavbar landingHistory={this.props.history}/> 
 				<h2>{localStorage.getItem('current_commits_project')}</h2>
 				<div>
 				{localStorage.getItem('current_commits_list').split(',https://').slice(1).map(commit =>
 					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.split(' | ')[0]}/> 
 				)}
-				</div>
-				<div>
-					<button onClick={this.goBackToProjects}>Back</button>
 				</div>
       </div>
     )

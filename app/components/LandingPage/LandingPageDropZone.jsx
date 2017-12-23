@@ -61,8 +61,11 @@ class LandingPageDropZone extends Component {
 
   render() {
     return (
-      <div id='landingPageDropZoneContainer'>
-        Sync Your Files Here
+      <div className="landingPageDropZoneInnerContainer">
+        <div className='landingPageDropZone'>
+          Sync A Project Here
+        </div>
+        <div className="landingPageDropZoneComment">Drag and drop a Logic project into the space to sync up and start working!</div>
       </div>
     )
   }

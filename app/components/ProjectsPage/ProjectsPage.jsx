@@ -3,6 +3,7 @@ import {render} from 'react-dom'
 import {Redirect, Link} from 'react-router-dom'
 
 import ProjectsList from './ProjectsList.jsx'
+import LandingPageNavbar from '../LandingPage/LandingPageNavbar.jsx'
 
 import $ from 'jquery'
 
@@ -11,18 +12,12 @@ class ProjectsPage extends Component {
     super(props)
     this.state = {
     };
-    this.goToHomePage = this.goToHomePage.bind(this)
-  }
-
-  goToHomePage() {
-    this.props.history.push('/LandingPage')
   }
 
   render() {
     return (
       <div>
-        <h1>Flam Studio</h1>
-        <button onClick={this.goToHomePage}>Home Page</button>
+        <LandingPageNavbar landingHistory={this.props.history}/>
         <div>
             <ProjectsList projectsPageHistory={this.props.history}/>
         </div>

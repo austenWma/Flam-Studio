@@ -7,6 +7,12 @@ import * as firebase from 'firebase'
 
 import path from 'path'
 
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+
 class Login extends Component {
   constructor (props) {
     super(props)
@@ -51,14 +57,33 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
-        <div>
-            Login
+      <div className="loginContainer">
+        <div className="loginLogo">
+					<img src={'http://i66.tinypic.com/2zgu68p.png'} style={{height: '40%', width: '40%'}} />
         </div>
-        <input type="text" placeholder="email" onChange={this.emailChange}></input>
-        <input type="text" placeholder="password" onChange={this.passwordChange}></input>
-        <button onClick={this.login}>Log In</button>
-        <button onClick={this.goToSignUp}>Sign Up</button>
+        <MuiThemeProvider>
+          <div className="loginActionContainer">
+            <TextField
+              hintText="Email"
+              style={{width: '55%'}}
+              onChange={this.emailChange}
+            />
+            <TextField
+              hintText="Password"
+              style={{width: '55%', marginTop: '5%'}}
+              type="password"
+              onChange={this.passwordChange}
+            />
+            <div className="loginButtonContainer">
+              <div className="loginButton">
+                <RaisedButton label="Log In" fullWidth={true} onClick={this.login}/>
+              </div>
+            </div>
+          </div>
+        </MuiThemeProvider>
+        <div className="loginSignupPrompt">Don't have an account with us?
+          <div onClick={this.goToSignUp}>Sign Up</div>
+        </div>
       </div>
     )
   }

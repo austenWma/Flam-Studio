@@ -33,7 +33,7 @@
     "image-webpack-loader": "^3.4.2",
     "jquery": "^3.2.1",
     "jump.js": "^1.0.2",
-    "material-ui": "^0.19.2",
+    "material-ui": "^0.19.4",
     "nodemon": "^1.12.1",
     "path": "^0.12.7",
     "prop-types": "^15.6.0",

@@ -5,8 +5,6 @@ import {Redirect, Link} from 'react-router-dom'
 import LandingPageNavbar from './LandingPageNavbar.jsx'
 import LandingPageDropZone from './LandingPageDropZone.jsx'
 
-import $ from 'jquery'
-
 const fs = window.require('fs-extra')
 var remote = window.require('electron').remote;
 var zipFolder = window.require('zip-folder');
@@ -24,8 +22,6 @@ class LandingPage extends Component {
     super(props)
     this.state = {
     };
-    this.goToProjectsPage = this.goToProjectsPage.bind(this)
-    this.logOut = this.logOut.bind(this)
     this.dlCommitFromWeb = this.dlCommitFromWeb.bind(this)
     this.openCommitFromWeb = this.openCommitFromWeb.bind(this)
   }
@@ -54,17 +50,6 @@ class LandingPage extends Component {
     })
     .catch(err => {
       console.log(err)
-    })
-  }
-
-  goToProjectsPage() {
-    this.props.history.push('/ProjectsPage')
-  }
-
-  logOut() {
-    firebase.auth().signOut().then(() => {
-      localStorage.setItem('access_token', null)
-      this.props.history.push('/')
     })
   }
 
@@ -104,21 +89,9 @@ class LandingPage extends Component {
   render() {
     return (
       <div>
-        <div className="landingPageNavbarContainer">
-          <LandingPageNavbar />
-        </div>
+        <LandingPageNavbar landingHistory={this.props.history}/>
         <div className="landingPageDropZoneContainer">
           <LandingPageDropZone />
-        </div>
-        <div>
-          <button onClick={this.goToProjectsPage}>
-            My Projects
-          </button>
-        </div>
-        <div>
-          <button onClick={this.logOut}>
-            Log Out
-          </button>
         </div>
       </div>
     )

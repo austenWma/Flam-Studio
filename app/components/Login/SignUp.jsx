@@ -35,7 +35,7 @@ class SignUp extends Component {
 					console.log(err.code)
 					console.log(err.message)
 			})
-	}
+		}
 	}
 
 	goToLogin() {
