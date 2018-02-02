@@ -25,6 +25,7 @@ class LandingPageNavbar extends Component {
     this.logOut = this.logOut.bind(this)
     this.goToProjectsPage = this.goToProjectsPage.bind(this)
     this.goToHome = this.goToHome.bind(this)
+    this.goToProfilePage = this.goToProfilePage.bind(this)
   }
 
   logOut() {
@@ -42,6 +43,10 @@ class LandingPageNavbar extends Component {
     this.props.landingHistory.push('/LandingPage')
   }
 
+  goToProfilePage() {
+    console.log(localStorage)
+  }
+
   render() {
     return (
       <div className="landingNavbarContainer">
@@ -56,7 +61,7 @@ class LandingPageNavbar extends Component {
               <SettingsIcon />
             </IconButton>}
             iconStyle={{}}>
-              <MenuItem primaryText="Your Profile"/>
+              <MenuItem primaryText="Your Profile" onClick={this.goToProfilePage}/>
               <MenuItem primaryText="Account Settings"/>
               <Divider />
               <MenuItem primaryText="Sign Out" onClick={this.logOut}/>

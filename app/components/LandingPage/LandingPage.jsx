@@ -44,6 +44,8 @@ class LandingPage extends Component {
           let dlLink = data.val().split(' | ')[0]
           let fileName = data.val().split(' | ')[1] + '.logicx.zip'
 
+          console.log('FILENAME', data.val(), fileName)
+
           this.dlCommitFromWeb(dlLink, fileName)
         }
       })
@@ -72,18 +74,24 @@ class LandingPage extends Component {
   }
 
   openCommitFromWeb(filePath) {
-    shell.openItem(filePath);
+
     setTimeout(() => { 
-      shell.openItem(filePath.slice(0, filePath.length - 4))
-      
-      // Re-wipe FB OpeningProject
-      db.ref(`users/${localStorage.getItem('access_token')}`).update({
-        openingProject: ''
-      })
-      .then(() => {
-        console.log('Opening Projects Wiped')
-      })
-    }, 1000)
+			console.log('FIRING OPEN', shell.openItem(filePath))
+			shell.openItem(filePath);
+			setTimeout(() => { 
+        shell.openItem(filePath.slice(0, filePath.length - 4))
+        
+        shell.openItem(filePath.slice(0, filePath.length - 4))
+        
+        // Re-wipe FB OpeningProject
+        db.ref(`users/${localStorage.getItem('access_token')}`).update({
+          openingProject: ''
+        })
+        .then(() => {
+          console.log('Opening Projects Wiped')
+        })
+			}, 4000)
+    }, 3000)
   }
 
   render() {

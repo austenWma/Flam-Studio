@@ -31,6 +31,7 @@ class Login extends Component {
     .then(data => {
         if (data) {
             localStorage.setItem('access_token', data.uid.slice(0,10))
+            localStorage.setItem('user_email', this.state.email)
             this.props.history.push('/LandingPage')
         }
     })

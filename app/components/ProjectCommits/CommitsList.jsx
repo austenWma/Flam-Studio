@@ -11,11 +11,9 @@ var remote = window.require('electron').remote
 class CommitsList extends Component {
   constructor (props) {
     super(props)
-    this.state = {
-		};
 	}
 
-	// Splitting at ,https to create a unique break point for the string
+  // Splitting at ,https to create a unique break point for the string
 
   render() {
     return (
@@ -24,7 +22,7 @@ class CommitsList extends Component {
 				<h2>{localStorage.getItem('current_commits_project')}</h2>
 				<div>
 				{localStorage.getItem('current_commits_list').split(',https://').slice(1).map(commit =>
-					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.split(' | ')[0]}/> 
+					<CommitsListItem commitDescription={commit.split(' | ')[1]} commitLink={commit.split(' | ')[0]} commitUser={commit.split(' | ')[3]}/> 
 				)}
 				</div>
       </div>

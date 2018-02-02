@@ -59,8 +59,8 @@ class ProjectsListItem extends Component {
 		this.compressSyncedFile(this.props.projectName, this.uploadFile)
 	}
 
-  compressSyncedFile(projectName, uploadCallback) {
-    console.log('Compressing file', this.props.projectName)
+  	compressSyncedFile(projectName, uploadCallback) {
+    	console.log('Compressing file', this.props.projectName)
 
 		let appPath = remote.app.getAppPath()  
 		let fullProjectName = this.props.projectName + '.logicx'
@@ -142,13 +142,13 @@ class ProjectsListItem extends Component {
 								if (!data.val()) {
 									// Create new property with count starting at 1
 									let updateCommitObj = {
-										1: downloadURL + ' | ' + r + ' | ' + Date()
+										1: downloadURL + ' | ' + r + ' | ' + Date() + ' | ' + localStorage.getItem('user_email')
 									}
 									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
 								}	else {
 									// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
 									let updateCommitObj = {
-										[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date()
+										[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date() + ' | ' + localStorage.getItem('user_email')
 									}
 									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
 								}
@@ -215,13 +215,13 @@ class ProjectsListItem extends Component {
 									if (!data.val()) {
 										// Create new property with count starting at 1
 										let updateCommitObj = {
-											1: downloadURL + ' | ' + r + ' | ' + Date()
+											1: downloadURL + ' | ' + r + ' | ' + Date() + ' | ' + localStorage.getItem('user_email')
 										}
 										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}	else {
 										// Get the length of how many current commits there are, and the commit number of the current commit will be one higher
 										let updateCommitObj = {
-											[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date()
+											[data.val().length]: downloadURL + ' | ' + r + ' | ' + Date() + ' | ' + localStorage.getItem('user_email')
 										}
 										db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${newProjectID.slice(2)}`).update(updateCommitObj)
 									}

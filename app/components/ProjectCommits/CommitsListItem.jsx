@@ -43,17 +43,21 @@ class CommitsListItem extends Component {
 		let filePath = appPath + '/Synced-Files/' + fileName
 
 		setTimeout(() => { 
+			console.log('FIRING OPEN', shell.openItem(filePath))
 			shell.openItem(filePath);
 			setTimeout(() => { 
 				shell.openItem(filePath.slice(0, filePath.length - 4))
-			}, 1000)
-		}, 1000)
+			}, 4000)
+		}, 3000)
 	}
 
   render() {
     return (
       <div>
-				<div>{this.props.commitDescription}</div>
+				<div className="commitInfo">
+					<div>{this.props.commitDescription}</div>
+					<div>{this.props.commitUser}</div>
+				</div>
 				<button onClick={this.openCommit}>Open</button>
       </div>
     )
