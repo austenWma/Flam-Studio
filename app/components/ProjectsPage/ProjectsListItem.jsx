@@ -65,20 +65,20 @@ class ProjectsListItem extends Component {
 		let appPath = remote.app.getAppPath()  
 		let fullProjectName = this.props.projectName + '.logicx'
 
-    zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx', appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx' + '.zip', function(err) {
-      if(err) {
-          console.log('oh no!', err);
-      } else {
-				console.log('FILE COMPRESSED')
+		zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx', appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx' + '.zip', function(err) {
+		if(err) {
+			console.log('oh no!', err);
+		} else {
+					console.log('FILE COMPRESSED')
 
-				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
-					if (err) {
-						throw err;
-					} 
-					uploadCallback(data, projectName)
-				})
-      }
-    });
+					let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
+						if (err) {
+							throw err;
+						} 
+						uploadCallback(data, projectName)
+					})
+		}
+		});
 	}
 
 	uploadFile(file, projectName) {
@@ -243,10 +243,13 @@ class ProjectsListItem extends Component {
 
 				// ADD PROJECT KEY TO USER'S FB DATA
 
-				let cutProjectID = newProjectID.slice(2)
+				let cutProjectID = newProjectID.slice(2);
 
 				let updateProjectObj = {
-					[cutProjectID]: projectName
+					[cutProjectID]: {
+						Name: projectName,
+						Collaborators: localStorage.getItem('user_email')
+					},
 				}
 
 				db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).update(updateProjectObj)
@@ -273,7 +276,7 @@ class ProjectsListItem extends Component {
 
 		db.ref(`users/${localStorage.getItem('access_token')}/projectIDs`).once('value').then((data) => {
 			for (var key in data.val()) {
-				if (data.val()[key] === this.props.projectName) {
+				if (data.val()[key].Name === this.props.projectName) {
 					commitsProjectID = key
 				}
 			}

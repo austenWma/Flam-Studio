@@ -65,7 +65,7 @@ class ProjectsList extends Component {
 				// If doesn't exist, then we need to create a new directory following project item structure
 
 				for (var key in data.val()) {
-					if (!files.includes(data.val()[key])) {
+					if (!files.includes(data.val()[key].Name)) {
 						fs.mkdir(appPath + '/Synced-Files/' + data.val()[key])
 						// *** The 0.1 is to remain consistent with other ProjectID files (Firebase didn't allow '.' in keys) *** //
 					}	
