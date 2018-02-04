@@ -27,6 +27,7 @@ class ProjectsListItem extends Component {
 		this.commitFile = this.commitFile.bind(this)
 		this.uploadFile = this.uploadFile.bind(this)
 		this.openCommits = this.openCommits.bind(this)
+		this.syncCommits = this.syncCommits.bind(this)
 	}
 
 	componentDidMount() {
@@ -56,32 +57,32 @@ class ProjectsListItem extends Component {
 	}
 
 	commitFile() {
-		this.compressSyncedFile(this.props.projectName, this.uploadFile)
+		this.compressSyncedFile(this.props.projectName, this.uploadFile, this.syncCommits)
 	}
 
-  	compressSyncedFile(projectName, uploadCallback) {
-    	console.log('Compressing file', this.props.projectName)
+	compressSyncedFile(projectName, uploadCallback, syncCallback) {
+		console.log('Compressing file', this.props.projectName)
 
 		let appPath = remote.app.getAppPath()  
 		let fullProjectName = this.props.projectName + '.logicx'
 
 		zipFolder(appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx', appPath + '/Synced-Files/' + projectName + '/' + this.props.projectName + '.logicx' + '.zip', function(err) {
-		if(err) {
-			console.log('oh no!', err);
-		} else {
-					console.log('FILE COMPRESSED')
+			if(err) {
+				console.log('oh no!', err);
+			} else {
+				console.log('FILE COMPRESSED')
 
-					let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
-						if (err) {
-							throw err;
-						} 
-						uploadCallback(data, projectName)
-					})
-		}
+				let file = fs.readFile(appPath + '/Synced-Files/' + projectName + '/' + fullProjectName + '.zip', function read(err, data) {
+					if (err) {
+						throw err;
+					} 
+					uploadCallback(data, projectName, syncCallback)
+				})
+			}
 		});
 	}
 
-	uploadFile(file, projectName) {
+	uploadFile(file, projectName, syncCallback) {
 
 		let appPath = remote.app.getAppPath()
 		let existingProjectID = ''
@@ -152,8 +153,8 @@ class ProjectsListItem extends Component {
 									}
 									db.ref(`users/${localStorage.getItem('access_token')}/projectCommits/${existingProjectID.slice(2)}`).update(updateCommitObj)
 								}
-	
-								alert('Commit Made')
+
+								syncCallback(downloadURL + ' | ' + r + ' | ' + Date() + ' | ' + localStorage.getItem('user_email'), existingProjectID.slice(2), data.val().length)
 							});
 						})
 						.catch(err => {
@@ -292,6 +293,29 @@ class ProjectsListItem extends Component {
 
 				this.props.projectsPageHistory.push('/CommitsList')
 			})
+		})
+		.catch(err => console.log(err))
+	}
+
+	syncCommits(commitInfo, projectID, commitNumber) {
+		// 1) Iterate through all collaborators associated with project
+		db.ref(`users/${localStorage.getItem('access_token')}/projectIDs/${projectID}/Collaborators`).once('value').then((data) => {
+
+			let collaboratorsArr = data.val().split(' | ')
+			// 2) For each collaborator, add the new commit to their project commits
+			for (let i = 0; i < collaboratorsArr.length; i++) {
+				if (collaboratorsArr[i] !== sessionStorage.getItem('access_token')) {
+
+					let newCommitObj = {
+						[commitNumber]: commitInfo
+					}
+
+					db.ref(`users/${collaboratorsArr[i]}/projectCommits/${projectID}`).update(newCommitObj)
+				}
+			}
+		})
+		.then(() => {
+			alert('Commit Made')
 		})
 		.catch(err => console.log(err))
 	}

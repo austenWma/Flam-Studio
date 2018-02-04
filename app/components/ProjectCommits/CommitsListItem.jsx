@@ -21,7 +21,6 @@ class CommitsListItem extends Component {
 		};
 		this.openCommit = this.openCommit.bind(this)
 		this.dlOpenCommit = this.dlOpenCommit.bind(this)
-		this.syncCommit = this.syncCommit.bind(this)
 	}
 
 	openCommit() {
@@ -50,10 +49,6 @@ class CommitsListItem extends Component {
 				shell.openItem(filePath.slice(0, filePath.length - 4))
 			}, 4000)
 		}, 3000)
-	}
-
-	syncCommit() {
-		//1) iterate through 
 	}
 
   render() {
