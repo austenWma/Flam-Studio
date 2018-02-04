@@ -56,7 +56,7 @@ class LandingPageNavbar extends Component {
     return (
       <div className="landingNavbarContainer">
         <div className="landingNavLogo">
-					<img src={'http://i66.tinypic.com/2zgu68p.png'} style={{height: '90px', width: '90px'}} />
+					<img src={'http://i67.tinypic.com/2cct1fq.png'} style={{height: '90px', width: '90px'}} />
         </div>
         <div className="landingNavSettings">
           <MuiThemeProvider>
