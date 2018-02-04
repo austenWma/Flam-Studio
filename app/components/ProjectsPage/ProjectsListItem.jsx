@@ -248,7 +248,7 @@ class ProjectsListItem extends Component {
 				let updateProjectObj = {
 					[cutProjectID]: {
 						Name: projectName,
-						Collaborators: localStorage.getItem('user_email')
+						Collaborators: localStorage.getItem('access_token')
 					},
 				}
 
