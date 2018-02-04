@@ -7,6 +7,7 @@ import * as firebase from 'firebase'
 
 import path from 'path'
 
+import $ from 'jquery';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
@@ -24,6 +25,16 @@ class Login extends Component {
     this.passwordChange = this.passwordChange.bind(this)
     this.login = this.login.bind(this)
     this.goToSignUp = this.goToSignUp.bind(this)
+  }
+
+  componentDidMount() {
+    let login = this.login;
+    
+    $(".loginPasswordInputField, loginUsernameInputField").keyup(function(event) {
+      if (event.keyCode === 13) {
+        login();
+      }
+    });
   }
 
   login() {
@@ -67,12 +78,14 @@ class Login extends Component {
             <TextField
               hintText="Email"
               style={{width: '55%'}}
+              className={"loginUsernameInputField"}
               onChange={this.emailChange}
             />
             <TextField
               hintText="Password"
               style={{width: '55%', marginTop: '5%'}}
               type="password"
+              className={"loginPasswordInputField"}
               onChange={this.passwordChange}
             />
             <div className="loginButtonContainer">
